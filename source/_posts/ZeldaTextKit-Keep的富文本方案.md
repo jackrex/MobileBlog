@@ -13,11 +13,12 @@ tags: iOS
 基于上面的背景，这个控件需要支持 HTML，@ #hashtag# 解析也不能少。对于 AutoLayout 也要友好。 于是前期调研了一些现有的控件：
 - [DTCoreText](https://github.com/Cocoanetics/DTCoreText) 强大的富文本控件，可以解析 HTML + CSS
 - [YYText](https://github.com/ibireme/YYText) 支持图文混排，支持异步绘制，基于 CoreText 实现。支持简单的 Markdown/表情解析
+- [ActiveLabel](https://github.com/optonaut/ActiveLabel.swift) 支持 @ #hashtag# 等自定义正则解析的控件
 
 
 ## HTML 解析
 
-对于 HTML 的支持， [DTCoreText](https://github.com/Cocoanetics/DTCoreText) 是非常强大的，文本的绘制基于 CoreText。HTML 的解析是单独的一套逻辑。渲染与逻辑分离。封装了不同的接口：DTAttributedLabel，DTAttributedTextCell，DTAttributedTextView。对于我们来说这个控件有点重，而且就目前的情况来说我们不需要对富文本进行编辑。只需要简单的显示就可以了。也不需要支持丰富的 CSS。所以我们参考了很多  [DTCoreText](https://github.com/Cocoanetics/DTCoreText) 的实现思路，使用了类似的 SAX 解析方式。封装了一套 HTML 解析。具体的实现思路可以参考这篇文章：http://blog.cnbang.net/tech/2630/  我在这里就不再赘述。
+对于 HTML 的支持， [DTCoreText](https://github.com/Cocoanetics/DTCoreText) 是非常强大的，文本的绘制基于 CoreText。HTML 的解析是单独的一套逻辑。渲染与逻辑分离。封装了不同的接口：DTAttributedLabel，DTAttributedTextCell，DTAttributedTextView。对于我们来说这个控件有点重，而且就目前的情况来说我们不需要对富文本进行编辑。只需要简单的显示就可以了。也不需要支持丰富的 CSS。所以我们参考了很多 [DTCoreText](https://github.com/Cocoanetics/DTCoreText) 的实现思路，使用了 SAX 解析方式。封装了一套 HTML 解析。具体的实现思路可以参考这篇文章：http://blog.cnbang.net/tech/2630/  我在这里就不再赘述。
 
 
 
@@ -29,7 +30,7 @@ TextKit 分为三部分：
 
 - `NSTextContainer` 定义文本绘制的区域。
 
-- `NSLayoutManager` 将所有的组件粘合在一起：监听 Text Storage 中文本或属性改变的通知，一旦接收到通知就触发布局进程。它将所有的Text Storage 提供的文本翻译为字形。字形生成后，这个管理器向它的 Text Containers 查询文本可用以绘制的区域。然后开始逐行填充。填充完后就会显示在对应的控件上。
+- `NSLayoutManager` 将所有的组件粘合在一起：监听 Text Storage 中文本或属性改变的通知，一旦接收到通知就触发布局进程。它将所有的 Text Storage 提供的文本翻译为字形。字形生成后，这个管理器向它的 Text Containers 查询文本可用以绘制的区域。然后开始逐行填充。填充完后就会显示在对应的控件上。
 
 ZeldaLabel 使用 TextKit 重新实现了渲染，继承于 UILabel，首先在 attributedText 的 didSet 方法处理加工 AttributedString, 处理完成后把处理完的文本设置给 textStorage。
 重写了 drawText 的绘制逻辑，使用 layoutManager 进行排版渲染:
@@ -39,7 +40,7 @@ let glyphRange = layoutManager.glyphRange(for: textContainer)
 layoutManager.drawBackground(forGlyphRange: glyphRange, at: newOrigin)
 layoutManager.drawGlyphs(forGlyphRange: glyphRange, at: newOrigin)```
 
-这样文本就可以显示在 UIlabel 上面了
+这样文本就可以显示在 UILabel 上面了
 
 ## 点击实现
 通过设置 attributedText 解析富文本信息。 遍历所有的`NSLinkAttributeName` 属性后保存一个数组。重写 touchesBegan 等事件实现点击判断对应的文本所在的 range ，如果是在之前保存的数组中，就触发点击，响应事件。将当前点击的 link 回调出去。  
