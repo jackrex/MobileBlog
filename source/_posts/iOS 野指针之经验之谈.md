@@ -1,0 +1,92 @@
+---
+title: iOS 野指针之经验之谈
+date: 2017-12-11 13:28:15
+tags:
+- iOS
+- Crash
+---
+
+# iOS 野指针之经验之谈
+
+## 背景
+Keep 之前项目有很多野指针Crash，野指针Crash 之所以难解决原因在于：无法复现、堆栈无意义、上报无有效信息。例如Keep 比较多的一个Crash 如下图：
+
+![](../images/wired1.png)
+
+除了我们看到他是崩溃在主函数中之外，其他信息毫无可用之言。而且更具版本分布、设备型号完全没有特殊性，这个给排查加大了难度。
+
+我们着手使用 Address Sanitizer/ Zombie 都无法找到原因。加上Keep 项目十分庞大，给排查问题增加了非常大的难度。
+
+于是我们分析一下在ARC 情况下怎么能够出现野指针
+
+## 野指针原理
+野指针是指指向一个已删除的对象或未申请访问受限内存区域的指针。Obj-C野指针，说的是Obj-C对象释放之后指针未置空，导致的野指针。
+
+既然是访问已经释放的对象为什么不是必现Crash呢？
+
+- 对象释放后内存没被改动过，原来的内存保存完好，可能不Crash或者出现逻辑错误（随机Crash）。
+- 对象释放后内存没被改动过，但是它自己析构的时候已经删掉某些必要的东西，可能不Crash、Crash在访问依赖的对象比如类成员上、出现逻辑错误（随机Crash）。
+- 对象释放后内存被改动过，写上了不可访问的数据，直接就出错了很可能Crash在objc_msgSend上面（必现Crash，常见）。
+- 对象释放后内存被改动过，写上了可以访问的数据，可能不Crash、出现逻辑错误、间接访问到不可访问的数据（随机Crash）。
+- 对象释放后内存被改动过，写上了可以访问的数据，但是再次访问的时候执行的代码把别的数据写坏了，遇到这种Crash只能哭了（随机Crash，难度大，概率低）！！
+- 对象释放后再次release（几乎是必现Crash，但也有例外，很常见）。
+
+如下图：
+![](../images/wired2.png)
+
+## ARC 野指针原因分析
+###原因
+- 涉及到 c 指针容易出现野指针，常见于系统库或这第三方库中的 delegate 或者其他ref。
+- 线程问题: 多线程造成的野指针问题。
+- 在 dealloc 中使用 self 赋值。容易出现 weak_register_no_lock 查看： http://www.jianshu.com/p/c799b7c2683e
+
+###代码建议
+- 线程安全：从遇到的crash中观察，有两个点需要注意
+- dealloc 中清理 UIScrollView，WebView，AVAudioPlayer等delegate
+- property getter 方法 lazy load 减少使用
+
+
+###案例分析
+##### 典型问题 1: Set WKWebView delegate nil when dealloc
+```
+295127407	4.10.1(9977)	2017-10-06 09:45:35 729	iPhone 5S	8.4 (12H143)
+```
+https://bugly.qq.com/v2/crash-reporting/crashes/900003109/2004023/report?pid=2
+
+https://stackoverflow.com/questions/34213352/wkwebview-scrollview-delegate
+##### 典型问题 2:  怀疑：UITableVIew Delegate zombie 的问题
+```
+295125660	4.10.1(9977)	2017-10-06 09:07:07 363	iPhone 6 Plus	8.1 (12B411)
+```
+https://bugly.qq.com/v2/crash-reporting/crashes/900003109/2004023/report?pid=2
+ 
+##### 典型问题 3 疑似：WebView 销毁后清理问题
+```
+[AVPlayerViewController(AVPlaybackControlsViewControllerActions) doneButtonTapped:]
+```
+https://bugly.qq.com/v2/crash-reporting/crashes/900003109/2004023?pid=2
+
+
+
+##### 典型问题 4 怀疑: performSelector 导致。 【crash 数量多】
+performSelector会 retain，但暴力测试下也不安全。
+0 libobjc.A.dylib objc_msgSend + 16
+1 Foundation ___NSThreadPerformPerform + 340
+##### 问题 5 [UIWindow setDelegate:]
+https://stackoverflow.com/questions/30473756/crash-in-dismissviewcontrolleranimated-objective-c
+##### 问题 6 线程问题
+https://bugly.qq.com/v2/crash-reporting/crashes/900003109/1528615?pid=2
+##### 问题7 线程问题
+https://bugly.qq.com/v2/crash-reporting/crashes/900003109/1783297?pid=2
+##### 问题8 
+
+https://bugly.qq.com/v2/crash-reporting/crashes/900003109/1864440?pid=2
+```
+dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self _kep_showRouteTracksAnimationWithStep:step currentROI:currentROI];
+        });
+```
+## 结论
+ARC 出现野指针的经典情况都以上Case 中列了出来，最主要是要关注系统库C 层的调用、多线程、强制置为Nil 等情况，文章开篇那个野指针Crash 最后也是由系统库 AVPlayer 造成的，具体如果排查的过程日后在梳理一篇文章和大家探讨。
+
+
