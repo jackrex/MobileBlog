@@ -1,6 +1,6 @@
 ---
 title: 网络层设计漫谈
-date: 2018-01-08 15:31:18
+date: 2018-12-22 15:31:18
 tags:
 - iOS
 - Network
@@ -67,13 +67,13 @@ KEPRequest *request = [[KEPRequest alloc] init];
                                  @"mobile":@"xxxxxx",
                                  @"countryName":@"CHN"
                                  };
-    
+
     [request startWithBlock:^(__kindof KEPRequest * _Nonnull request) {
         NSLog(@"%@", request);
-        
+
     } failure:^(__kindof KEPRequest * _Nonnull request) {
         NSLog(@"%@", request);
-        
+
     }];
 ```
 

@@ -1,6 +1,6 @@
 ---
 title: Swift实现一个区块链
-date: 2018-01-15 16:56:56
+date: 2018-01-07 16:56:56
 tags:
 ---
 
@@ -19,7 +19,7 @@ tags:
 比特币是一个去中心化的账本， 每个客户端都作为P2P的节点存在于网络并自己拥有一份完整的账本
 ![image](../images/blockchain/decentral.png)
 
-如果A向B转账 1 比特币: 
+如果A向B转账 1 比特币:
 1. A向周围节点广播转账交易请求：A向B转账1个比特币，并用A账号的私钥签名
 2. A周围的节点收到请求之后，通过A账号的公钥检查交易的真伪，并且检查A账户是否有足够的余额
 3. 检查通过后，节点在自己的账本记录：A向B转账1比特币
@@ -50,7 +50,7 @@ struct Block {
     let transactions: [Transaction]
     let proof: String
     let previousHash: String
-    
+
     func json() -> String {
         return ""
     }
@@ -60,11 +60,11 @@ struct BlockChain {
     var blocks = [Block]()
     var currentTransactions = [Transaction]()
     var nodes = Set<String>()
-    
+
     init() {
 //        createBlock(proof: "100", previousHash: "1")
     }
-    
+
     mutating func createTransaction(from sender: String, to recipient: String, amount: Int) -> Int {
         let transaction = Transaction(sender: sender,
                                       recipient: recipient,
@@ -81,14 +81,14 @@ struct BlockChain {
                           transactions: currentTransactions,
                           proof: proof,
                           previousHash: previousHash)
-        
+
         currentTransactions.removeAll()
-        
+
         blocks.append(block)
-        
+
         return block
     }
-    
+
     func hash(_ block: Block) -> String {
         return sha256(block.json())
     }
@@ -103,12 +103,12 @@ extension BlockChain {
         while !isValid(proof: String(proof), lastProof: lastProof) {
             proof += 1
         }
-        
+
         return String(proof)
     }
     func isValid(proof: String, lastProof: String) -> Bool {
         let output = sha256(proof + lastProof)
-        
+
         return output.hasPrefix("0000")
     }
 }
@@ -125,7 +125,7 @@ extension BlockChain {
         for index in 1..<chain.count {
             let currentBlock = chain[index]
             let previousBlock = chain[index - 1]
-            
+
             if currentBlock.previousHash != hash(previousBlock) {
                 return false
             }

@@ -1,6 +1,6 @@
 ---
 title: iOS 之 MVC & MVVM
-date: 2017-12-08 21:38:55
+date: 2017-11-15 21:38:55
 tags:
 - iOS
 - Arch
@@ -24,13 +24,13 @@ MVVM 核心构成除了MVC 中的V和M之外还有VM 和 Binder。
 那么在Keep 项目中，从最早的MVC，到后面尝试使用MVVM。我们两种设计模式都在使用，设计模式没有好坏之分，在适合的场景使用上更加符合其的架构是相当重要的，所以我们在介绍MVC 和 MVVM 基础的用法后，在一些持有关系、开发中用到的一些Tips 也做了一些整理，可以一同探讨。
 
 # Architecture
-MVC 
+MVC
 ![](../images/mvc1.png)
 
 MVC 数据流向和持有关系
 
 - Controller 持有 View 和 Model
-- View 通过weak delegate、block、notification等回调 Controller 
+- View 通过weak delegate、block、notification等回调 Controller
 - View 可以持有Model，主要是用户回调时获取数据
 - Model 不持有 Controller 和 View
 
@@ -39,7 +39,7 @@ MVC 数据流向和持有关系
 MVVM
 ![](../images/mvvm1.png)
 
-VM 的作用 
+VM 的作用
 - 数据加工者
 - 通过ViewModel 进行V 和 M的交互
 - View 对应的 VM
@@ -68,10 +68,10 @@ MVC 做的时候的一些可参考的tips
 
 
 #Q & A
-##MVC 
+##MVC
 
 ####胖Model做什么
- 
+
 只做数据相关的helper方法，不做网络请求。
 
 ####View 可以持有Model

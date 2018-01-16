@@ -1,6 +1,6 @@
 ---
 title: ZeldaTextKit - Keep 的富文本方案
-date: 2018-01-13 22:02:46
+date: 2018-12-13 22:02:46
 tags: iOS
 ---
 
@@ -57,5 +57,3 @@ layoutManager.drawGlyphs(forGlyphRange: glyphRange, at: newOrigin)```
 ZeldaTextKit 在大部分场景下性能还是不错的。但是如果是混入了很多的图片的话，性能依然不是很好。未来可能也会提供使用异步的方式实现 UI 的渲染等。
 
 在做这个控件的时候当然也遇到了坑。对于 iOS 10.0 - 10.2 系统上面 emoji 的字体排版会居下一点点。造成被 emoji 被切断。对于我们的需求来说就是图片和 emoji 混排的时候，图片会更靠上一点。具体的bug 地址：https://openradar.appspot.com/radar?id=4998540401049600 苹果建议将 emoji 的字体替换，但是效果不是很好。无奈只能试了很多次调整对应的图片 `NSTextAttachment` 的位置。
-
-
