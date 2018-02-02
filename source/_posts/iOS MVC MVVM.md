@@ -25,7 +25,7 @@ MVVM 核心构成除了MVC 中的V和M之外还有VM 和 Binder。
 
 # Architecture
 MVC
-![](../images/mvc1.png)
+![](/images/mvc1.png)
 
 MVC 数据流向和持有关系
 
@@ -37,7 +37,7 @@ MVC 数据流向和持有关系
 
 
 MVVM
-![](../images/mvvm1.png)
+![](/images/mvvm1.png)
 
 VM 的作用
 - 数据加工者
@@ -53,7 +53,7 @@ MVVM 数据流向和持有关系
 
 在iOS 的 MVVM 设计中，我们使用RAC 作为Binder
 
-![](../images/mvvm2.jpg)
+![](/images/mvvm2.jpg)
 
 
 

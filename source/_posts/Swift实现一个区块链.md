@@ -6,7 +6,7 @@ tags:
 
 ## 传统中心化系统
 
-![Image](../images/blockchain/central.png)
+![Image](/images/blockchain/central.png)
 
 如果A向B转账 100 人民币:
 1. A 向银行提出请求
@@ -17,7 +17,7 @@ tags:
 ## 比特币的去中心化系统
 
 比特币是一个去中心化的账本， 每个客户端都作为P2P的节点存在于网络并自己拥有一份完整的账本
-![image](../images/blockchain/decentral.png)
+![image](/images/blockchain/decentral.png)
 
 如果A向B转账 1 比特币:
 1. A向周围节点广播转账交易请求：A向B转账1个比特币，并用A账号的私钥签名
@@ -27,7 +27,7 @@ tags:
 
 ## 区块链
 
-![image](../images/blockchain/blockchain.png)
+![image](/images/blockchain/blockchain.png)
 
 比特币两个节点互联时需要同步彼此的所有交易信息，区块链就是用于保证所有节点数据的统一，并通过竞争区块打包权的方式，保证了区块链的唯一性。
 - 以区块为单位同步交易数据
@@ -167,4 +167,4 @@ extension BlockChain {
 3. 假设Alice就是那个大boss，拥有网络51%的算力，他真的不愿意为这笔咖啡付钱(有钱人也可能很小气)，于是他开始攻击了
 4. 网络上很多节点都收到了这笔交易并加入区块准备运算了，Alice也同样开始贡献算力，但是在开始之前他把区块里的这笔交易改了，本来这是一笔Alice付款给Bob的交易，被改成Alice转给自己的一笔交易了(更改很容易，只要把接收地址和签名改掉即可)
 5. Alice开始尝试用这个伪区块进行计算(计算正确后这个快会被加入主块中)，因为拥有51%的算力，Alice比别的节点更容易优先计算成功，导致一个伪造的区块加入了主链。现在网络中有两个区块链:
-![51](../images/blockchain/51.png)
+![51](/images/blockchain/51.png)

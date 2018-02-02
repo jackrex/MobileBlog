@@ -11,7 +11,7 @@ tags:
 
 
 # 之前的设计
-![](../images/network1.png)
+![](/images/network1.png)
 
 ### 具体用法
 - 声明具体的Protocol类
@@ -38,7 +38,7 @@ tags:
 
 
 # Architecture
-![](../images/KEPRequest.png)
+![](/images/KEPRequest.png)
 
 
 # Code Sample

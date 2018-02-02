@@ -6,7 +6,7 @@ tags: iOS
 
 # 架构模型
 Keep iOS 基本架构模型设计如下所示
-![](../images/keep-arch.png)
+![](/images/keep-arch.png)
 上图模型从下到上依次分为 Core, Service, Business 三层：
 
 - Core 层主要包含网络请求、基础通用模块、数据存储以及第三方服务模块，这些模块接口直接提供给上层服务。

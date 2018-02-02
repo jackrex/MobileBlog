@@ -4,7 +4,7 @@ date: 2017-11-04 15:04:38
 tags: Other
 ---
 
-![](../images/init-page.jpg)
+![](/images/init-page.jpg)
 
 ### Why This Blog?
 We'd like to build up our tech skills and share it to more people.
